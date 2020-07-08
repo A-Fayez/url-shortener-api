@@ -1,3 +1,5 @@
 Flask
 Flask-SQLAlchemy
 python-dotenv
+werkzeug<=0.16.0
+gunicorn
