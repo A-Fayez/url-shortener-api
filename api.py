@@ -3,19 +3,34 @@ from flask import (
     Flask,
     url_for,
     redirect,
+    request,
 )
-from models import db
+from dotenv import load_dotenv
+
+from sqlalchemy import create_engine
+from sqlalchemy.orm import scoped_session, sessionmaker
+
+from helpers import generate_slug
 
 app = Flask(__name__)
+
+# load configuration for .env file
+APP_ROOT = os.path.dirname(__file__)
+dotenv_path = os.path.join(APP_ROOT, ".env")
+load_dotenv(dotenv_path)
+
+# Check for db environment variable
+if not os.getenv("DATABASE_URI"):
+    raise RuntimeError("DATABASE_URI is not set")
+
 
 # Configure session to use filesystem
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 
 # Set up databasee
-app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-db.init_app(app)
+engine = create_engine(os.getenv("DATABASE_URI"))
+db = scoped_session(sessionmaker(bind=engine))
 
 
 @app.route("/")
@@ -23,15 +38,12 @@ def index():
     return redirect(url_for("api"))
 
 
-@app.route("/shortlinks")
+@app.route("/shortlinks", methods=["POST", "GET"])
 def api():
-    return "api"
+    if request.method == "POST":
+        return f"post request: {request.json}"
 
+    if request.method == "GET":
+        return "get request"
 
-def main():
-    db.create_all()
-
-
-if __name__ == "__main__":
-    with app.app_context():
-        main()
+    return "Test", 200
