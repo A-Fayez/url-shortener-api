@@ -44,12 +44,12 @@ def api():
     if request.method == "POST":
 
         try:
-            slug = request.json["slug"] or ""
             ios_primary = request.json["ios"]["primary"]
             ios_fallback = request.json["ios"]["fallback"]
             android_primary = request.json["android"]["primary"]
             android_fallback = request.json["android"]["fallback"]
             web = request.json["web"]
+            slug = request.json["slug"] or ""
 
             # if any of the urls is invalid
             if not valid_schema(
